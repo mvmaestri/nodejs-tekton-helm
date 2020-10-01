@@ -9,3 +9,4 @@ tests
 bin
 application
 templates/application
+templates/app/src
