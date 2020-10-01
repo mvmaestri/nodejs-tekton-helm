@@ -22,7 +22,7 @@ spec:
   - apiVersion: tekton.dev/v1alpha1
     kind: PipelineResource
     metadata:
-      name: {{ .Values.application.name }}-git-repo-$(uid)
+      name: {{ .Values.application.name }}-git-repo
     spec:
       params:
       - name: revision
@@ -35,16 +35,16 @@ spec:
   - apiVersion: tekton.dev/v1alpha1
     kind: PipelineResource
     metadata:
-      name: {{ .Values.application.name }}-image-$(uid)
+      name: {{ .Values.application.name }}-image
     spec:
       params:
       - name: url
-        value: image-registry.openshift-image-registry.svc:5000/{{ .Values.application.environments.development }}/{{ .Values.application.name }}:$(uid)
+        value: image-registry.openshift-image-registry.svc:5000/{{ .Values.application.environments.development }}/{{ .Values.application.name }}:test
       type: image
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      name: run-{{ .Values.application.name }}-$(uid)
+      name: run-{{ .Values.application.name }}-test
     spec:
       pipelineRef:
         name: {{ .Values.pipeline.name }}
@@ -56,8 +56,8 @@ spec:
       resources:
       - name: git-source
         resourceRef:
-          name: {{ .Values.application.name }}-git-repo-$(uid)
+          name: {{ .Values.application.name }}-git-repo-test
       - name: runtime-image
         resourceRef:
-          name: {{ .Values.application.name }}-image-$(uid)
+          name: {{ .Values.application.name }}-image-test
       serviceAccountName: pipeline
