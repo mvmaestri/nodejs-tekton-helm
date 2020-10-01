@@ -4,28 +4,27 @@ metadata:
   name: deploy-nodejs-app
   namespace: {{ .Values.application.environments.cicd }}
 spec:
-  inputs:
-    resources:
+  params:
+    - name: APP_NAME
+      description: The name of the application
+      default: {{ .Values.application.name }}
+      type: string
+    - name: APP_VERSION
+      description: The version of the application
+      default: {{ .Values.application.version }}
+      type: string
+    - name: AUTHORS_API_KEY
+      description: The version of the application
+      default: 'authors-secret-api'
+      type: string
+    - name: DEPLOY_PROJECT
+      description: The project where you deploy the app
+      default: {{ .Values.application.environments.production }}
+      type: string
+  resources:
+    inputs:
       - name: image
         type: image
-    params:
-      - name: APP_NAME
-        description: The name of the application
-        default: {{ .Values.application.name }}
-        type: string
-      - name: APP_VERSION
-        description: The version of the application
-        default: {{ .Values.application.version }}
-        type: string
-      - name: AUTHORS_API_KEY
-        description: The version of the application
-        default: 'authors-secret-api'
-        type: string
-      - name: DEPLOY_PROJECT
-        description: The project where you deploy the app
-        default: {{ .Values.application.environments.production }}
-        type: string
-
   steps:
       - name: create-app
         image: quay.io/openshift/origin-cli:latest

@@ -4,25 +4,24 @@ metadata:
   name: s2i-nodejs
   namespace: {{ .Values.application.environments.cicd }}
 spec:
-  inputs:
-    resources:
+  params:
+    - name: VERSION
+      description: The version of the nodejs
+      default: 'latest'
+      type: string
+    - name: PATH_CONTEXT
+      description: The location of the path to run s2i from.
+      default: {{ .Values.application.from.git.s2i.context }}
+      type: string
+    - name: TLSVERIFY
+      description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
+      default: "false"
+      type: string
+  resources:
+    inputs:
       - name: source
         type: git
-    params:
-      - name: VERSION
-        description: The version of the nodejs
-        default: 'latest'
-        type: string
-      - name: PATH_CONTEXT
-        description: The location of the path to run s2i from.
-        default: {{ .Values.application.from.git.s2i.context }}
-        type: string
-      - name: TLSVERIFY
-        description: Verify the TLS on the registry endpoint (for push/pull to a non-TLS registry)
-        default: "false"
-        type: string
-  outputs:
-    resources:
+    outputs:
       - name: image
         type: image
   steps:

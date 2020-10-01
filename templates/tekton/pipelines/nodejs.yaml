@@ -1,11 +1,10 @@
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
-  name: nodejs
+  name: {{ .Values.pipeline.name }}
   namespace: {{ .Values.application.environments.cicd }}
   labels:
     app: {{ .Values.application.name }}
-    description: nodejs pipeline with testing and production environment
 spec:
   resources:
     - name: nodejs-git

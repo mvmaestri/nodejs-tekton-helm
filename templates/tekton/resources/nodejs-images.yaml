@@ -2,7 +2,8 @@
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
 metadata:
-  name: nodejs-image-production
+  name: nodejs-image-development
+  namespace: {{ .Values.application.environments.cicd }}
   labels:
     app: {{ .Values.application.name }}
 spec:
@@ -15,6 +16,7 @@ apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
 metadata:
   name: nodejs-image-production
+  namespace: {{ .Values.application.environments.cicd }}
   labels:
     app: {{ .Values.application.name }}
 spec:

@@ -1,15 +1,15 @@
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineRun
 metadata:
-  name: v{{ .Values.application.version }}-{{ randAlphaNum 5 | quote }}
+  name: run
   namespace: {{ .Values.application.environments.cicd }}
   labels:
     app: {{ .Values.application.name }}
     version: {{ .Values.application.version }}
 spec:
-  serviceAccountName: pipeline
+  serviceAccountName: tekton-triggers-sa
   pipelineRef:
-    name: nodejs
+    name: {{ .Values.pipeline.name }}
   resources:
     - name: nodejs-git
       resourceRef:
