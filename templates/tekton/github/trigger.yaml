@@ -1,0 +1,52 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+# This requires the simple pipeline tasks from the pipeline hotel to be installed first
+# and the simple pipeline, and the conditional resource
+# Tested on Tekton 0.11
+metadata:
+  name: {{ .Values.application.name }}-trigger-template-dev
+  namespace: {{ .Values.application.environments.cicd }}
+spec:
+  params:
+  - name: ref
+    description: git reference or branch name
+  - name: revision
+    description: The revision of your git repository
+  - name: repourl
+    description: The url of your git repository
+  - name: reponame
+    description: The name of your git repository
+  - name: message
+    description: commit message
+  - name: author
+    description: commit author
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1alpha1
+    kind: PipelineRun
+    metadata:
+      generateName: $(params.reponame)-
+      namespace: {{ .Values.application.environments.cicd }}
+      labels:
+        webhooks.tekton.dev/repourl: $(params.repourl)
+        webhooks.tekton.dev/repo: $(params.reponame)
+        webhooks.tekton.dev/branch: $(params.ref)
+        webhooks.tekton.dev/message: $(params.message)
+        webhooks.tekton.dev/author: $(params.author)
+    spec:
+      serviceAccountName: tekton-triggers-sa
+      params:
+        - name: event-type
+          value: event
+      pipelineRef:
+        name: nodejs
+      resources:
+        - name: nodejs-git
+          resourceRef:
+            name: nodejs-git-$(uid)
+        - name: nodejs-image-development-$(uid)
+          resourceRef:
+            name: nodejs-image-development-$(uid)
+        - name: nodejs-image-production-$(uid)
+          resourceRef:
+            name: nodejs-image-production-$(uid)
