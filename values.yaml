@@ -14,8 +14,9 @@ application:
     cicd: nodejs-tekton-ci
   from:
     git:
+      name: nodejs-tekton-helm
       url: https://github.com/mvmaestri/nodejs-tekton-helm.git
       revision: master
       submodules: false
       s2i:
-        context: app/src
+        context: templates/app/src
