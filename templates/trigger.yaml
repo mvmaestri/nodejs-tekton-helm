@@ -1,0 +1,62 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: {{ .Values.application.name }}
+  namespace: {{ .Values.application.environments.development }}
+spec:
+  params:
+  - default: {{ .Values.application.from.git.url }}
+    description: The git repository url
+    name: git-repo-url
+  - default: master
+    description: The git revision
+    name: git-revision
+  - default: {{ .Values.application.from.git.revision }}
+    description: The name of the deployment to be created / patched
+    name: git-repo-name
+  - default: {{ .Values.application.from.git.submodules }}
+    description: "Should tekton initialize git submodules in the repository (true - false)"
+    name: init-submodules
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1alpha1
+    kind: PipelineResource
+    metadata:
+      name: {{ .Values.application.name }}-git-repo-$(uid)
+    spec:
+      params:
+      - name: revision
+        value: {{ .Values.application.version }}
+      - name: url
+        value: {{ .Values.application.from.git.url }}
+      - name: submodules
+        value: {{ .Values.application.from.git.submodules }}
+      type: git
+  - apiVersion: tekton.dev/v1alpha1
+    kind: PipelineResource
+    metadata:
+      name: {{ .Values.application.name }}-image-$(uid)
+    spec:
+      params:
+      - name: url
+        value: image-registry.openshift-image-registry.svc:5000/{{ .Values.application.environments.development }}/{{ .Values.application.name }}:$(uid)
+      type: image
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      name: run-{{ .Values.application.name }}-$(uid)
+    spec:
+      pipelineRef:
+        name: {{ .Values.pipeline.name }}
+      params:
+      - name: git-branch
+        value: {{ .Values.application.version }}
+      - name: image-url
+        value: image-registry.openshift-image-registry.svc:5000/{{ .Values.application.environments.development }}/{{ .Values.application.name }}
+      resources:
+      - name: git-source
+        resourceRef:
+          name: {{ .Values.application.name }}-git-repo-$(uid)
+      - name: runtime-image
+        resourceRef:
+          name: {{ .Values.application.name }}-image-$(uid)
+      serviceAccountName: pipeline

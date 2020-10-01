@@ -1,0 +1,11 @@
+# comment
+.DS_Store
+.git
+*/temp*
+*/*/temp*
+temp?
+test
+tests
+bin
+application
+templates/application

@@ -1,0 +1,21 @@
+# Default values for tekton-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+pipeline:
+  name: nodejs
+
+application:
+  name: nodejs-tekton
+  version: 1.0.0
+  environments:
+    development: nodejs-tekton-development
+    production: nodejs-tekton-production
+    cicd: nodejs-tekton-ci
+  from:
+    git:
+      url: https://github.com/vladsancira/nodejs-tekton.git
+      revision: master
+      submodules: false
+      s2i:
+        context: nodejs

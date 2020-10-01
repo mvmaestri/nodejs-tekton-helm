@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  name: v{{ .Values.application.version }}-{{ randAlphaNum 5 | quote }}
+  namespace: {{ .Values.application.environments.cicd }}
+  labels:
+    app: {{ .Values.application.name }}
+    version: {{ .Values.application.version }}
+spec:
+  serviceAccountName: pipeline
+  pipelineRef:
+    name: nodejs
+  resources:
+    - name: nodejs-git
+      resourceRef:
+        name: nodejs-git
+    - name: nodejs-image-development
+      resourceRef:
+        name: nodejs-image-development
+    - name: nodejs-image-production
+      resourceRef:
+        name: nodejs-image-production
+  params:
+    - name: DEPLOY_ENVIRONMENT
+      value: 'nodejs-tekton-development'
+    - name: PROMOTE_ENVIRONMENT
+      value: 'nodejs-tekton-production'
